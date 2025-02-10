@@ -2,14 +2,17 @@ import pygame
 from enum import Enum
 from os import path
 
+pygame.font.init()
+pygame.display.set_caption("Space Invader")
+
 
 class GameSetting(Enum):
     width = 1000
     height = 800
     size = width, height
     window = pygame.display.set_mode(size)
-    pygame.display.set_caption("Space Invader")
-    pygame.font.init()
+    Clock = pygame.time.Clock()
+    font = pygame.font.SysFont("comicsans", 50)
 
 
 class ShipImage(Enum):
@@ -51,3 +54,5 @@ class UtilityImage(Enum):
 class Color(Enum):
     white = 255, 255, 255
     black = 0, 0, 0
+    red = 255, 0, 0
+    green = 0, 255, 0

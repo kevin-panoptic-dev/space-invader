@@ -1,6 +1,8 @@
+import pygame, numpy as np
 from abc import ABC, abstractmethod
 from typing import Optional
 from pygame.surface import Surface
+from utility import is_intersecting
 
 
 class Ship(ABC):
@@ -9,10 +11,14 @@ class Ship(ABC):
         self._x: Optional[float]
         self._y: Optional[float]
         self._health: Optional[float]
+        self._current_health: Optional[float]
         self._ship_image: Optional[Surface]
         self._weapon_image: Optional[list[Surface]]
         self._alive: Optional[bool]
         self._cool_down_limit: Optional[float]
+        self._multiplier: Optional[float]
+        self._velocity: Optional[float]
+        self._group: Optional[str]
 
     @abstractmethod
     def draw(self, window: Surface) -> None:
@@ -23,12 +29,93 @@ class Ship(ABC):
         pass
 
     @abstractmethod
-    def health_bar(self) -> None:
+    def health_bar(self, window: Surface) -> None:
         pass
 
     @abstractmethod
-    def collide(self) -> None:
+    def collide(self, objects: list["Bullet"]) -> None:
+        objects = list(filter(lambda bullet: bullet.group != self.group, objects))
+        collided_objects = is_intersecting(self, objects)
+        if not len(collided_objects):
+            return
+
+        total_damage = np.sum([bullet.power for bullet in collided_objects])
+        self.current_health -= total_damage
+        if self.current_health < 0:
+            self.alive = False
+
+    @abstractmethod
+    def move(self) -> None:
         pass
+
+    @property
+    def velocity(self):
+        if not isinstance(self._velocity, float):
+            raise RuntimeError(f"self.velocity is not defined yet.")
+        return self._velocity
+
+    @velocity.setter
+    def velocity(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._velocity = value
+
+    @velocity.deleter
+    def velocity(self):
+        self._velocity = None
+
+    @property
+    def current_health(self):
+        if not isinstance(self._current_health, float):
+            raise RuntimeError(f"self.current_health is not defined yet.")
+        return self._current_health
+
+    @current_health.setter
+    def current_health(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._current_health = value
+
+    @current_health.deleter
+    def current_health(self):
+        self._current_health = None
+
+    @property
+    def group(self):
+        if not isinstance(self._group, str):
+            raise RuntimeError(f"self.group is not defined yet.")
+        return self._group
+
+    @group.setter
+    def group(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError(f"Expected str, got {type(value).__name__}.")
+        self._group = value
+
+    @group.deleter
+    def group(self):
+        self._group = None
+
+    @property
+    def multiplier(self):
+        if not isinstance(self._multiplier, float):
+            raise RuntimeError(f"self.multiplier is not defined yet.")
+        return self._multiplier
+
+    @multiplier.setter
+    def multiplier(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected int, got {type(value).__name__}.")
+        self._multiplier = value
+
+    @multiplier.deleter
+    def multiplier(self):
+        self._multiplier = None
+
+    @property
+    def mask(self) -> pygame.Mask:
+        mask = pygame.mask.from_surface(self.ship_image)
+        return mask
 
     @property
     def cool_down_limit(self):
@@ -37,7 +124,7 @@ class Ship(ABC):
         return self._cool_down_limit
 
     @cool_down_limit.setter
-    def cool_down_limit(self, value):
+    def cool_down_limit(self, value: float):
         if not isinstance(value, float):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._cool_down_limit = value
@@ -53,7 +140,7 @@ class Ship(ABC):
         return self._alive
 
     @alive.setter
-    def alive(self, value):
+    def alive(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError(f"Expected bool, got {type(value).__name__}.")
         self._alive = value
@@ -69,7 +156,7 @@ class Ship(ABC):
         return self._weapon_image
 
     @weapon_image.setter
-    def weapon_image(self, value):
+    def weapon_image(self, value: list[Surface]):
         if not isinstance(value, list):
             raise TypeError(f"Expected list, got {type(value).__name__}.")
         self._weapon_image = value
@@ -85,7 +172,7 @@ class Ship(ABC):
         return self._ship_image
 
     @ship_image.setter
-    def ship_image(self, value):
+    def ship_image(self, value: Surface):
         if not isinstance(value, Surface):
             raise TypeError(f"Expected Surface, got {type(value).__name__}.")
         self._ship_image = value
@@ -101,7 +188,7 @@ class Ship(ABC):
         return self._health
 
     @health.setter
-    def health(self, value):
+    def health(self, value: float):
         if not isinstance(value, float):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._health = value
@@ -117,7 +204,7 @@ class Ship(ABC):
         return self._y
 
     @y.setter
-    def y(self, value):
+    def y(self, value: float):
         if not isinstance(value, float):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._y = value
@@ -133,7 +220,7 @@ class Ship(ABC):
         return self._x
 
     @x.setter
-    def x(self, value):
+    def x(self, value: float):
         if not isinstance(value, float):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._x = value
@@ -141,3 +228,228 @@ class Ship(ABC):
     @x.deleter
     def x(self):
         self._x = None
+
+
+class EnemyShip(Ship):
+    @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+        self.group = "enemy"
+
+    @abstractmethod
+    def draw(self, window: Surface) -> None:
+        return super().draw(window)
+
+    @abstractmethod
+    def attack(self) -> None:
+        return super().attack()
+
+    @abstractmethod
+    def health_bar(self, window: Surface) -> None:
+        return super().health_bar(window)
+
+    @abstractmethod
+    def move(self) -> None:
+        self.y += self.velocity
+
+    @abstractmethod
+    def collide(self, objects: list["Bullet"]) -> None:
+        return super().collide(objects)
+
+
+class ComradeShip(Ship):
+    @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+        self.group = "comrade"
+
+    @abstractmethod
+    def draw(self, window: Surface) -> None:
+        return super().draw(window)
+
+    @abstractmethod
+    def attack(self) -> None:
+        return super().attack()
+
+    @abstractmethod
+    def health_bar(self, window: Surface) -> None:
+        return super().health_bar(window)
+
+    @abstractmethod
+    def collide(self, objects: list["Bullet"]) -> None:
+        return super().collide(objects)
+
+    @abstractmethod
+    def move(self) -> None:
+        self.y -= self.velocity
+
+
+class Bullet(ABC):
+    def __init__(self) -> None:
+        self._power: Optional[float]
+        self._x: Optional[float]
+        self._y: Optional[float]
+        self._image: Optional[Surface]
+        self._group: Optional[str]
+        self._alive: Optional[bool]
+        self._x_velocity: Optional[float]
+        self._y_velocity: Optional[float]
+
+    @abstractmethod
+    def move(self):
+        pass
+
+    def collide(self, objects: list[Ship]):
+        objects = list(filter(lambda ship: ship.group != self.group, objects))
+        collided_objects = is_intersecting(self, objects)
+        if len(collided_objects):
+            self.alive = False
+
+    @property
+    def y_velocity(self):
+        if not isinstance(self._y_velocity, float):
+            raise RuntimeError(f"self.y_velocity is not defined yet.")
+        return self._y_velocity
+
+    @y_velocity.setter
+    def y_velocity(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._y_velocity = value
+
+    @y_velocity.deleter
+    def y_velocity(self):
+        self._y_velocity = None
+
+    @property
+    def x_velocity(self):
+        if not isinstance(self._x_velocity, float):
+            raise RuntimeError(f"self.x_velocity is not defined yet.")
+        return self._x_velocity
+
+    @x_velocity.setter
+    def x_velocity(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._x_velocity = value
+
+    @x_velocity.deleter
+    def x_velocity(self):
+        self._x_velocity = None
+
+    @property
+    def alive(self):
+        if not isinstance(self._alive, bool):
+            raise RuntimeError(f"self.alive is not defined yet.")
+        return self._alive
+
+    @alive.setter
+    def alive(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected bool, got {type(value).__name__}.")
+        self._alive = value
+
+    @alive.deleter
+    def alive(self):
+        self._alive = None
+
+    @property
+    def group(self):
+        if not isinstance(self._group, str):
+            raise RuntimeError(f"self.group is not defined yet.")
+        return self._group
+
+    @group.setter
+    def group(self, value: str):
+        if not isinstance(value, str):
+            raise TypeError(f"Expected str, got {type(value).__name__}.")
+        self._group = value
+
+    @group.deleter
+    def group(self):
+        self._group = None
+
+    @property
+    def mask(self):
+        mask = pygame.mask.from_surface(self.image)
+        return mask
+
+    @property
+    def image(self):
+        if not isinstance(self._image, Surface):
+            raise RuntimeError(f"self.image is not defined yet.")
+        return self._image
+
+    @image.setter
+    def image(self, value: Surface):
+        if not isinstance(value, Surface):
+            raise TypeError(f"Expected Surface, got {type(value).__name__}.")
+        self._image = value
+
+    @image.deleter
+    def image(self):
+        self._image = None
+
+    @property
+    def y(self):
+        if not isinstance(self._y, float):
+            raise RuntimeError(f"self.y is not defined yet.")
+        return self._y
+
+    @y.setter
+    def y(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._y = value
+
+    @y.deleter
+    def y(self):
+        self._y = None
+
+    @property
+    def x(self):
+        if not isinstance(self._x, float):
+            raise RuntimeError(f"self.x is not defined yet.")
+        return self._x
+
+    @x.setter
+    def x(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._x = value
+
+    @x.deleter
+    def x(self):
+        self._x = None
+
+    @property
+    def power(self):
+        if not isinstance(self._power, float):
+            raise RuntimeError(f"self.power is not defined yet.")
+        return self._power
+
+    @power.setter
+    def power(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._power = value
+
+    @power.deleter
+    def power(self):
+        self._power = None
+
+
+class EnemyBullet(Bullet):
+    @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+        self.group = "enemy"
+        self.alive = True
+
+
+class ComradeBullet(Bullet):
+    @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+        self.group = "comrade"
+        self.alive = True
