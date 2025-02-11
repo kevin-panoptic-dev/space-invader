@@ -3,7 +3,6 @@ from enum import Enum
 from os import path
 
 pygame.font.init()
-pygame.display.set_caption("Space Invader")
 
 
 class GameSetting(Enum):

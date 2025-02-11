@@ -235,6 +235,7 @@ class EnemyShip(Ship):
     def __init__(self) -> None:
         super().__init__()
         self.group = "enemy"
+        self.alive = True
 
     @abstractmethod
     def draw(self, window: Surface) -> None:
@@ -262,6 +263,7 @@ class ComradeShip(Ship):
     def __init__(self) -> None:
         super().__init__()
         self.group = "comrade"
+        self.alive = True
 
     @abstractmethod
     def draw(self, window: Surface) -> None:

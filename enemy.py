@@ -1,8 +1,9 @@
-import pygame, numpy as np
+import pygame, numpy as np, random
 from constants import ShipImage, Color, BulletImage, GameSetting
 from abstract import EnemyShip, Bullet
 from pygame.surface import Surface
 from typing import Optional
+from utility import shoot
 
 
 class GeneticEnemy(EnemyShip):
@@ -17,8 +18,8 @@ class GeneticEnemy(EnemyShip):
         ]
         self.health = 1.0
         self.multiplier = 10
-        self.alive = True
         self.velocity = 1.0
+        self.cool_down_limit = 2
 
     def draw(self, window: Surface) -> None:
         if self.alive:
@@ -34,7 +35,13 @@ class GeneticEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
-        raise NotImplementedError("method is not implemented yet.")
+        shoot(
+            self.x + self.ship_image.get_width() / 2,
+            self.y + self.ship_image.get_height() * 1.2,
+            random.choice(self.weapon_image),
+            "enemy",
+            "hyperbolic",
+        )
 
 
 class GiantEnemy(EnemyShip):
@@ -50,8 +57,8 @@ class GiantEnemy(EnemyShip):
             BulletImage.hyperbolic_red.value,
             BulletImage.hyperbolic_yellow.value,
         ]
-        self.alive = True
-        self.velocity = 0.3
+        self.velocity = 0.8
+        self.cool_down_limit = 3
 
     def move(self) -> None:
         return super().move()
@@ -86,7 +93,13 @@ class GiantEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
-        raise NotImplementedError("method is not implemented yet.")
+        shoot(
+            self.x + self.ship_image.get_width() / 2,
+            self.y + self.ship_image.get_height() * 1.2,
+            random.choice(self.weapon_image),
+            "enemy",
+            "hyperbolic",
+        )
 
 
 class UfoEnemy(EnemyShip):
@@ -99,8 +112,8 @@ class UfoEnemy(EnemyShip):
         self.multiplier = 2
         self.current_health = 2.0
         self.weapon_image = [BulletImage.circular_red.value]
-        self.alive = True
         self.velocity = 1.5
+        self.cool_down_limit = 1.5
 
     def move(self):
         if self.direction == None:
@@ -154,7 +167,20 @@ class UfoEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
-        raise NotImplementedError("method is not implemented yet.")
+        shoot(
+            self.x,
+            self.y + self.ship_image.get_height() * 1,
+            random.choice(self.weapon_image),
+            "enemy",
+            "circular",
+        )
+        shoot(
+            self.x + self.ship_image.get_width(),
+            self.y + self.ship_image.get_height() * 1,
+            random.choice(self.weapon_image),
+            "enemy",
+            "circular",
+        )
 
     @property
     def direction(self):
@@ -181,11 +207,15 @@ class LeaderEnemy(EnemyShip):
         self.multiplier = 0.3
         self.current_health = 10.0
         self.weapon_image = [BulletImage.elite.value]
-        self.alive = True
+        self.cool_down_limit = 10
+        self.velocity = 0.3
 
     def draw(self, window: Surface) -> None:
         if self.alive:
             window.blit(self.ship_image, (self.x, self.y))
+
+    def move(self):
+        return super().move()
 
     def health_bar(self, window: Surface):
         pygame.draw.rect(
@@ -213,4 +243,10 @@ class LeaderEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
-        raise NotImplementedError("method is not implemented yet.")
+        shoot(
+            self.x,
+            self.y + self.ship_image.get_height() * 1.2,
+            random.choice(self.weapon_image),
+            "enemy",
+            "elite",
+        )
