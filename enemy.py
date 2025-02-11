@@ -1,6 +1,6 @@
 import pygame, numpy as np, random
 from constants import ShipImage, Color, BulletImage, GameSetting
-from abstract import EnemyShip, Bullet
+from abstract import EnemyShip
 from pygame.surface import Surface
 from typing import Optional
 from utility import shoot
@@ -31,7 +31,7 @@ class GeneticEnemy(EnemyShip):
     def health_bar(self, window: Surface) -> None:
         return None
 
-    def collide(self, objects: list[Bullet]) -> None:
+    def collide(self, objects: list) -> None:
         return super().collide(objects)
 
     def attack(self) -> None:
@@ -89,7 +89,7 @@ class GiantEnemy(EnemyShip):
             ),
         )
 
-    def collide(self, objects: list[Bullet]) -> None:
+    def collide(self, objects: list) -> None:
         return super().collide(objects)
 
     def attack(self) -> None:
@@ -163,7 +163,7 @@ class UfoEnemy(EnemyShip):
             ),
         )
 
-    def collide(self, objects: list[Bullet]) -> None:
+    def collide(self, objects: list) -> None:
         return super().collide(objects)
 
     def attack(self) -> None:
@@ -239,7 +239,7 @@ class LeaderEnemy(EnemyShip):
             ),
         )
 
-    def collide(self, objects: list[Bullet]) -> None:
+    def collide(self, objects: list) -> None:
         return super().collide(objects)
 
     def attack(self) -> None:

@@ -2,7 +2,7 @@ import pygame, pickle, random, numpy as np
 from pygame.surface import Surface
 from typing import Optional
 from constants import ShipImage, BulletImage, GameSetting
-from abstract import Bullet, ComradeShip
+from abstract import ComradeShip
 from utility import collect_data, shoot
 from typing import override, Literal
 
@@ -59,7 +59,7 @@ class Player(ComradeShip):
         self.x = GameSetting.width.value / 2 - self.ship_image.get_width() / 2
         self.y = GameSetting.height.value * 0.9 - self.ship_image.get_height() / 3
 
-    def collide(self, objects: list[Bullet]) -> None:
+    def collide(self, objects: list) -> None:
         super().collide(objects)
 
     def attack(self) -> None:
