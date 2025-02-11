@@ -19,6 +19,7 @@ class Ship(ABC):
         self._multiplier: Optional[float]
         self._velocity: Optional[float]
         self._group: Optional[str]
+        self._last_shoot_time: Optional[float]
 
     @abstractmethod
     def draw(self, window: Surface) -> None:
@@ -47,6 +48,22 @@ class Ship(ABC):
     @abstractmethod
     def move(self) -> None:
         pass
+
+    @property
+    def last_shoot_time(self):
+        if not isinstance(self._last_shoot_time, float):
+            raise RuntimeError(f"self.last_shoot_time is not defined yet.")
+        return self._last_shoot_time
+
+    @last_shoot_time.setter
+    def last_shoot_time(self, value: float):
+        if not isinstance(value, float):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
+        self._last_shoot_time = value
+
+    @last_shoot_time.deleter
+    def last_shoot_time(self):
+        self._last_shoot_time = None
 
     @property
     def velocity(self):
@@ -236,6 +253,7 @@ class EnemyShip(Ship):
         super().__init__()
         self.group = "enemy"
         self.alive = True
+        self.last_shoot_time = 0
 
     @abstractmethod
     def draw(self, window: Surface) -> None:
@@ -264,6 +282,7 @@ class ComradeShip(Ship):
         super().__init__()
         self.group = "comrade"
         self.alive = True
+        self.last_shoot_time = 0
 
     @abstractmethod
     def draw(self, window: Surface) -> None:

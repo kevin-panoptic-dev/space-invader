@@ -1,10 +1,11 @@
-import pygame, pickle, random, numpy as np
+import pickle, random, numpy as np, time, pygame
 from pygame.surface import Surface
 from typing import Optional
-from constants import ShipImage, BulletImage, GameSetting
+from constants import ShipImage, BulletImage, GameSetting, Color
 from abstract import ComradeShip
 from utility import collect_data, shoot
 from typing import override, Literal
+from game import is_available
 
 move_type = Literal[0, 1, -1]
 
@@ -63,6 +64,8 @@ class Player(ComradeShip):
         super().collide(objects)
 
     def attack(self) -> None:
+        if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return
         shoot(
             self.x + self.ship_image.get_width() / 4,
             self.y - self.ship_image.get_height() * 1,
@@ -76,6 +79,29 @@ class Player(ComradeShip):
             random.choice(self.weapon_image),
             "comrade",
             "circular",
+        )
+        self.last_shoot_time = time.time()
+
+    def health_bar(self, window: Surface) -> None:
+        pygame.draw.rect(
+            window,
+            Color.red.value,
+            (
+                self.x,
+                self.y + self.ship_image.get_height() + 10,
+                self.ship_image.get_width(),
+                6,
+            ),
+        )
+        pygame.draw.rect(
+            window,
+            Color.green.value,
+            (
+                self.x,
+                self.y + self.ship_image.get_height() + 10,
+                int(self.ship_image.get_width() * self.current_health / self.health),
+                6,
+            ),
         )
 
     @override
@@ -143,7 +169,3 @@ class Player(ComradeShip):
         if not isinstance(value, float):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._restored_health = value
-
-    @restored_health.deleter
-    def restore_health(self):
-        self._restored_health = None

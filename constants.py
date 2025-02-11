@@ -10,8 +10,9 @@ class GameSetting(Enum):
     height = 800
     size = width, height
     window = pygame.display.set_mode(size)
-    Clock = pygame.time.Clock()
+    clock = pygame.time.Clock()
     font = pygame.font.SysFont("comicsans", 50)
+    fps = 60
 
 
 class ShipImage(Enum):

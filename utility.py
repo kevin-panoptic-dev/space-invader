@@ -48,7 +48,7 @@ def collect_data():
             raise ValueError("Velocity must between 1.0 and 5.0")
 
         vibrenthe(
-            "Enter preferred cool down interval, between 0.3 and 3.0: >>>",
+            "Enter preferred cool down interval, between 0.3 and 2.0: >>>",
             usefile=False,
             useline=False,
             color=vibrenthe.GREEN,
@@ -56,8 +56,8 @@ def collect_data():
         )
         cool_down_limit = round(float(input()), 2)
 
-        if not 0.3 <= cool_down_limit <= 3.0:
-            raise ValueError("Cool down must between 0.3 and 3.0")
+        if not 0.3 <= cool_down_limit <= 2.0:
+            raise ValueError("Cool down must between 0.3 and 2.0")
 
         vibrenthe(
             "Enter preferred restored_health, between 0 and 50: >>>",

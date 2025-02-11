@@ -1,9 +1,10 @@
-import pygame, numpy as np, random
+import pygame, numpy as np, random, time
 from constants import ShipImage, Color, BulletImage, GameSetting
 from abstract import EnemyShip
 from pygame.surface import Surface
 from typing import Optional
 from utility import shoot
+from game import is_available
 
 
 class GeneticEnemy(EnemyShip):
@@ -35,6 +36,9 @@ class GeneticEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
+        if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return
+
         shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
@@ -42,6 +46,7 @@ class GeneticEnemy(EnemyShip):
             "enemy",
             "hyperbolic",
         )
+        self.last_shoot_time = time.time()
 
 
 class GiantEnemy(EnemyShip):
@@ -93,6 +98,9 @@ class GiantEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
+        if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return
+
         shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
@@ -100,6 +108,7 @@ class GiantEnemy(EnemyShip):
             "enemy",
             "hyperbolic",
         )
+        self.last_shoot_time = time.time()
 
 
 class UfoEnemy(EnemyShip):
@@ -167,6 +176,8 @@ class UfoEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
+        if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return
         shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1,
@@ -181,6 +192,7 @@ class UfoEnemy(EnemyShip):
             "enemy",
             "circular",
         )
+        self.last_shoot_time = time.time()
 
     @property
     def direction(self):
@@ -243,6 +255,9 @@ class LeaderEnemy(EnemyShip):
         return super().collide(objects)
 
     def attack(self) -> None:
+        if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return
+
         shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1.2,
@@ -250,3 +265,4 @@ class LeaderEnemy(EnemyShip):
             "enemy",
             "elite",
         )
+        self.last_shoot_time = time.time()
