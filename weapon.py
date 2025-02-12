@@ -168,6 +168,10 @@ class EnemyBullet(Bullet):
         self.group = "enemy"
         self.alive = True
 
+    def draw(self, window: Surface):
+        if self.alive:
+            window.blit(self.image, (self.x, self.y))
+
 
 class ComradeBullet(Bullet):
     @abstractmethod
@@ -175,6 +179,10 @@ class ComradeBullet(Bullet):
         super().__init__()
         self.group = "comrade"
         self.alive = True
+
+    def draw(self, window: Surface):
+        if self.alive:
+            window.blit(self.image, (self.x, self.y))
 
 
 class ComradeHyperbolicBullet(ComradeBullet):

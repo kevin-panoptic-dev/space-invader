@@ -57,7 +57,7 @@ class Ship(ABC):
 
     @last_shoot_time.setter
     def last_shoot_time(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._last_shoot_time = value
 
@@ -121,8 +121,8 @@ class Ship(ABC):
 
     @multiplier.setter
     def multiplier(self, value: float):
-        if not isinstance(value, float):
-            raise TypeError(f"Expected int, got {type(value).__name__}.")
+        if not isinstance(value, (float, int)):
+            raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._multiplier = value
 
     @multiplier.deleter

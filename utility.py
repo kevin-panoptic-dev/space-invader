@@ -1,4 +1,4 @@
-import pygame
+import pygame, argparse, sys
 from pymodule.debug import vibrenthe
 from pymodule.utility import silence
 from pygame.surface import Surface
@@ -84,6 +84,7 @@ def collect_data():
 
 
 def shoot(x: float, y: float, image: Surface, group: groupType, weapon: weaponType):
+    global GLOBAL_BULLET_LIST
     match group:
         case "comrade":
             if weapon == "hyperbolic":
@@ -110,3 +111,19 @@ def shoot(x: float, y: float, image: Surface, group: groupType, weapon: weaponTy
     bullet.x = x
     bullet.y = y
     GLOBAL_BULLET_LIST.append(bullet)
+
+
+def parse() -> str:
+    user_flag_short: str = "-u"
+    user_flag_long: str = "--user"
+    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    parser.add_argument(user_flag_short, user_flag_long, type=str, required=True)
+    try:
+        parsed_arguments: argparse.Namespace = parser.parse_args()
+    except SystemExit:
+        vibrenthe(
+            "User flag is required and must be provided with a valid string.",
+            end="\n\n",
+        )
+        sys.exit()
+    return parsed_arguments.user
