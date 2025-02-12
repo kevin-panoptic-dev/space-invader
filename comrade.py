@@ -20,19 +20,22 @@ class RocketComrade(ComradeShip):
         self.multiplier = 1
         self.velocity = 0.5
         self.cool_down_limit = 1.8
+        self.current_health = 1.0
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
+            return bullet_list
 
-        shoot(
+        bullet_list = shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
             random.choice(self.weapon_image),
             "enemy",
             "hyperbolic",
+            bullet_list,
         )
         self.last_shot_time = time.time()
+        return bullet_list
 
     def collide(self, objects: list) -> None:
         return super().collide(objects)

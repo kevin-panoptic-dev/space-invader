@@ -22,20 +22,24 @@ class Bullet(ABC):
         pass
 
     def collide(self, objects: list):
-        objects = list(filter(lambda ship: ship.group != self.group, objects))
+        objects = list(
+            filter(lambda ship: ship.group != self.group and ship.alive, objects)
+        )
         collided_objects = is_intersecting(self, objects)
+
         if len(collided_objects):
             self.alive = False
+            print("kill a bullet")
 
     @property
     def y_velocity(self):
-        if not isinstance(self._y_velocity, float):
+        if not isinstance(self._y_velocity, (float, int)):
             raise RuntimeError(f"self.y_velocity is not defined yet.")
         return self._y_velocity
 
     @y_velocity.setter
     def y_velocity(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._y_velocity = value
 
@@ -45,13 +49,13 @@ class Bullet(ABC):
 
     @property
     def x_velocity(self):
-        if not isinstance(self._x_velocity, float):
+        if not isinstance(self._x_velocity, (float, int)):
             raise RuntimeError(f"self.x_velocity is not defined yet.")
         return self._x_velocity
 
     @x_velocity.setter
     def x_velocity(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._x_velocity = value
 
@@ -114,13 +118,13 @@ class Bullet(ABC):
 
     @property
     def y(self):
-        if not isinstance(self._y, float):
+        if not isinstance(self._y, (float, int)):
             raise RuntimeError(f"self.y is not defined yet.")
         return self._y
 
     @y.setter
     def y(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._y = value
 
@@ -130,13 +134,13 @@ class Bullet(ABC):
 
     @property
     def x(self):
-        if not isinstance(self._x, float):
+        if not isinstance(self._x, (float, int)):
             raise RuntimeError(f"self.x is not defined yet.")
         return self._x
 
     @x.setter
     def x(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._x = value
 
@@ -146,13 +150,13 @@ class Bullet(ABC):
 
     @property
     def power(self):
-        if not isinstance(self._power, float):
+        if not isinstance(self._power, (float, int)):
             raise RuntimeError(f"self.power is not defined yet.")
         return self._power
 
     @power.setter
     def power(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._power = value
 
@@ -190,7 +194,7 @@ class ComradeHyperbolicBullet(ComradeBullet):
         super().__init__()
         self.power = 15
         self.x_velocity = 0
-        self.y_velocity = 2
+        self.y_velocity = 4
 
     def move(self):
         self.y -= self.y_velocity
@@ -203,7 +207,7 @@ class EnemyHyperbolicBullet(EnemyBullet):
         super().__init__()
         self.power = 10
         self.x_velocity = 0
-        self.y_velocity = 2
+        self.y_velocity = 4
 
     def move(self):
         self.y += self.y_velocity

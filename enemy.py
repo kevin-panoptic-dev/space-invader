@@ -10,7 +10,7 @@ from game import is_available
 class GeneticEnemy(EnemyShip):
     def __init__(self) -> None:
         super().__init__()
-        self.ship_image = ShipImage.genetic.value
+        self.ship_image = random.choice(ShipImage.genetic.value)
         self.weapon_image = [
             BulletImage.hyperbolic_blue.value,
             BulletImage.hyperbolic_green.value,
@@ -21,6 +21,7 @@ class GeneticEnemy(EnemyShip):
         self.multiplier = 10
         self.velocity = 1.0
         self.cool_down_limit = 2
+        self.current_health = 1.0
 
     def draw(self, window: Surface) -> None:
         if self.alive:
@@ -35,27 +36,29 @@ class GeneticEnemy(EnemyShip):
     def collide(self, objects: list) -> None:
         return super().collide(objects)
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
+            return bullet_list
 
-        shoot(
+        bullet_list = shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
             random.choice(self.weapon_image),
             "enemy",
             "hyperbolic",
+            bullet_list,
         )
         self.last_shoot_time = time.time()
+        return bullet_list
 
 
 class GiantEnemy(EnemyShip):
     def __init__(self) -> None:
         super().__init__()
         self.ship_image = ShipImage.giant.value
-        self.health = 5.0
+        self.health = 2.5
         self.multiplier = 1
-        self.current_health = 5.0
+        self.current_health = 2.5
         self.weapon_image = [
             BulletImage.hyperbolic_blue.value,
             BulletImage.hyperbolic_green.value,
@@ -71,54 +74,58 @@ class GiantEnemy(EnemyShip):
     def draw(self, window: Surface) -> None:
         if self.alive:
             window.blit(self.ship_image, (self.x, self.y))
+            pygame.draw.rect(
+                window,
+                Color.red.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    self.ship_image.get_width(),
+                    8,
+                ),
+            )
+            pygame.draw.rect(
+                window,
+                Color.green.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    int(
+                        self.ship_image.get_width() * self.current_health / self.health
+                    ),
+                    8,
+                ),
+            )
 
     def health_bar(self, window: Surface):
-        pygame.draw.rect(
-            window,
-            Color.red.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                self.ship_image.get_width(),
-                8,
-            ),
-        )
-        pygame.draw.rect(
-            window,
-            Color.green.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                int(self.ship_image.get_width() * self.current_health / self.health),
-                8,
-            ),
-        )
+        pass
 
     def collide(self, objects: list) -> None:
         return super().collide(objects)
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
+            return bullet_list
 
-        shoot(
+        bullet_list = shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
             random.choice(self.weapon_image),
             "enemy",
             "hyperbolic",
+            bullet_list,
         )
         self.last_shoot_time = time.time()
+        return bullet_list
 
 
 class UfoEnemy(EnemyShip):
     def __init__(self) -> None:
         super().__init__()
         self._direction: Optional[str] = None
-
         self.ship_image = ShipImage.ufo.value
         self.health = 2.0
-        self.multiplier = 2
+        self.multiplier = 5
         self.current_health = 2.0
         self.weapon_image = [BulletImage.circular_red.value]
         self.velocity = 1.5
@@ -149,41 +156,45 @@ class UfoEnemy(EnemyShip):
     def draw(self, window: Surface) -> None:
         if self.alive:
             window.blit(self.ship_image, (self.x, self.y))
+            pygame.draw.rect(
+                window,
+                Color.red.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    self.ship_image.get_width(),
+                    6,
+                ),
+            )
+            pygame.draw.rect(
+                window,
+                Color.green.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    int(
+                        self.ship_image.get_width() * self.current_health / self.health
+                    ),
+                    6,
+                ),
+            )
 
     def health_bar(self, window: Surface):
-        pygame.draw.rect(
-            window,
-            Color.red.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                self.ship_image.get_width(),
-                6,
-            ),
-        )
-        pygame.draw.rect(
-            window,
-            Color.green.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                int(self.ship_image.get_width() * self.current_health / self.health),
-                6,
-            ),
-        )
+        pass
 
     def collide(self, objects: list) -> None:
         return super().collide(objects)
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
-        shoot(
+            return bullet_list
+        bullet_list = shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1,
             random.choice(self.weapon_image),
             "enemy",
             "circular",
+            bullet_list,
         )
         shoot(
             self.x + self.ship_image.get_width(),
@@ -191,8 +202,10 @@ class UfoEnemy(EnemyShip):
             random.choice(self.weapon_image),
             "enemy",
             "circular",
+            bullet_list,
         )
         self.last_shoot_time = time.time()
+        return bullet_list
 
     @property
     def direction(self):
@@ -225,44 +238,48 @@ class LeaderEnemy(EnemyShip):
     def draw(self, window: Surface) -> None:
         if self.alive:
             window.blit(self.ship_image, (self.x, self.y))
+            pygame.draw.rect(
+                window,
+                Color.red.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    self.ship_image.get_width(),
+                    6,
+                ),
+            )
+            pygame.draw.rect(
+                window,
+                Color.green.value,
+                (
+                    self.x,
+                    self.y + self.ship_image.get_height() + 10,
+                    int(
+                        self.ship_image.get_width() * self.current_health / self.health
+                    ),
+                    6,
+                ),
+            )
 
     def move(self):
         return super().move()
 
     def health_bar(self, window: Surface):
-        pygame.draw.rect(
-            window,
-            Color.red.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                self.ship_image.get_width(),
-                6,
-            ),
-        )
-        pygame.draw.rect(
-            window,
-            Color.green.value,
-            (
-                self.x,
-                self.y + self.ship_image.get_height() + 10,
-                int(self.ship_image.get_width() * self.current_health / self.health),
-                6,
-            ),
-        )
+        pass
 
     def collide(self, objects: list) -> None:
         return super().collide(objects)
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
-
-        shoot(
+            return bullet_list
+        bullet_list = shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1.2,
             random.choice(self.weapon_image),
             "enemy",
             "elite",
+            bullet_list,
         )
         self.last_shoot_time = time.time()
+        return bullet_list

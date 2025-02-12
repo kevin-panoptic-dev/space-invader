@@ -3,7 +3,6 @@ from pymodule.debug import vibrenthe
 from pymodule.utility import silence
 from pygame.surface import Surface
 from typing import Literal
-from core import GLOBAL_BULLET_LIST
 from weapon import (
     EnemyEliteBullet,
     EnemyCircularBullet,
@@ -83,8 +82,14 @@ def collect_data():
         return collect_data()
 
 
-def shoot(x: float, y: float, image: Surface, group: groupType, weapon: weaponType):
-    global GLOBAL_BULLET_LIST
+def shoot(
+    x: float,
+    y: float,
+    image: Surface,
+    group: groupType,
+    weapon: weaponType,
+    bullet_list: list,
+):
     match group:
         case "comrade":
             if weapon == "hyperbolic":
@@ -110,7 +115,8 @@ def shoot(x: float, y: float, image: Surface, group: groupType, weapon: weaponTy
 
     bullet.x = x
     bullet.y = y
-    GLOBAL_BULLET_LIST.append(bullet)
+    bullet_list.append(bullet)
+    return bullet_list
 
 
 def parse() -> str:

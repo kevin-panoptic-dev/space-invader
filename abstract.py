@@ -26,8 +26,8 @@ class Ship(ABC):
         pass
 
     @abstractmethod
-    def attack(self) -> None:
-        pass
+    def attack(self, bullet_list: list):
+        return bullet_list
 
     @abstractmethod
     def health_bar(self, window: Surface) -> None:
@@ -35,7 +35,9 @@ class Ship(ABC):
 
     @abstractmethod
     def collide(self, objects: list) -> None:
-        objects = list(filter(lambda bullet: bullet.group != self.group, objects))
+        objects = list(
+            filter(lambda bullet: bullet.group != self.group and bullet.alive, objects)
+        )
         collided_objects = is_intersecting(self, objects)
         if not len(collided_objects):
             return
@@ -51,7 +53,7 @@ class Ship(ABC):
 
     @property
     def last_shoot_time(self):
-        if not isinstance(self._last_shoot_time, float):
+        if not isinstance(self._last_shoot_time, (float, int)):
             raise RuntimeError(f"self.last_shoot_time is not defined yet.")
         return self._last_shoot_time
 
@@ -67,13 +69,13 @@ class Ship(ABC):
 
     @property
     def velocity(self):
-        if not isinstance(self._velocity, float):
+        if not isinstance(self._velocity, (float, int)):
             raise RuntimeError(f"self.velocity is not defined yet.")
         return self._velocity
 
     @velocity.setter
     def velocity(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._velocity = value
 
@@ -83,13 +85,13 @@ class Ship(ABC):
 
     @property
     def current_health(self):
-        if not isinstance(self._current_health, float):
+        if not isinstance(self._current_health, (float, int)):
             raise RuntimeError(f"self.current_health is not defined yet.")
         return self._current_health
 
     @current_health.setter
     def current_health(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._current_health = value
 
@@ -115,7 +117,7 @@ class Ship(ABC):
 
     @property
     def multiplier(self):
-        if not isinstance(self._multiplier, float):
+        if not isinstance(self._multiplier, (float, int)):
             raise RuntimeError(f"self.multiplier is not defined yet.")
         return self._multiplier
 
@@ -136,13 +138,13 @@ class Ship(ABC):
 
     @property
     def cool_down_limit(self):
-        if not isinstance(self._cool_down_limit, float):
+        if not isinstance(self._cool_down_limit, (float, int)):
             raise RuntimeError(f"self.cool_down_limit is not defined yet.")
         return self._cool_down_limit
 
     @cool_down_limit.setter
     def cool_down_limit(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._cool_down_limit = value
 
@@ -200,13 +202,13 @@ class Ship(ABC):
 
     @property
     def health(self):
-        if not isinstance(self._health, float):
+        if not isinstance(self._health, (float, int)):
             raise RuntimeError(f"self.health is not defined yet.")
         return self._health
 
     @health.setter
     def health(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._health = value
 
@@ -216,13 +218,13 @@ class Ship(ABC):
 
     @property
     def y(self):
-        if not isinstance(self._y, float):
+        if not isinstance(self._y, (float, int)):
             raise RuntimeError(f"self.y is not defined yet.")
         return self._y
 
     @y.setter
     def y(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._y = value
 
@@ -232,13 +234,13 @@ class Ship(ABC):
 
     @property
     def x(self):
-        if not isinstance(self._x, float):
+        if not isinstance(self._x, (float, int)):
             raise RuntimeError(f"self.x is not defined yet.")
         return self._x
 
     @x.setter
     def x(self, value: float):
-        if not isinstance(value, float):
+        if not isinstance(value, (float, int)):
             raise TypeError(f"Expected float, got {type(value).__name__}.")
         self._x = value
 
@@ -260,8 +262,8 @@ class EnemyShip(Ship):
         return super().draw(window)
 
     @abstractmethod
-    def attack(self) -> None:
-        return super().attack()
+    def attack(self, bullet_list: list):
+        return super().attack(bullet_list)
 
     @abstractmethod
     def health_bar(self, window: Surface) -> None:
@@ -289,8 +291,8 @@ class ComradeShip(Ship):
         return super().draw(window)
 
     @abstractmethod
-    def attack(self) -> None:
-        return super().attack()
+    def attack(self, bullet_list: list):
+        return super().attack(bullet_list)
 
     @abstractmethod
     def health_bar(self, window: Surface) -> None:

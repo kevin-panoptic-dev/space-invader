@@ -4,10 +4,10 @@ import time
 def is_intersecting(host, opposites):
     returned_list = []
     for opposite in opposites:
-        offset_x: float = opposite.x - host.x
-        offset_y: float = opposite.y - host.y
+        offset_x: float = host.x - opposite.x
+        offset_y: float = host.y - opposite.y
         is_overlap = host.mask.overlap(opposite.mask, (offset_x, offset_y))
-        if is_overlap:
+        if is_overlap is not None:
             returned_list.append(opposite)
 
     return returned_list

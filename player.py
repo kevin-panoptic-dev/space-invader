@@ -37,7 +37,7 @@ class Player(ComradeShip):
                         self.cool_down_limit = new_dataset["cool_down_limit"]
                         self.restored_health = new_dataset["restored_health"]
                         all_data[user] = new_dataset
-                        with open("data.pickle", "rb") as file:
+                        with open("data.pickle", "wb") as file:
                             pickle.dump({user: all_data}, file)
 
         except FileNotFoundError:
@@ -47,7 +47,7 @@ class Player(ComradeShip):
             self.velocity = dataset["velocity"]
             self.cool_down_limit = dataset["cool_down_limit"]
             self.restored_health = dataset["restored_health"]
-            with open("data.pickle", "rb") as file:
+            with open("data.pickle", "wb") as file:
                 pickle.dump({user: dataset}, file)
 
         self.ship_image = ShipImage.player.value
@@ -58,31 +58,58 @@ class Player(ComradeShip):
             BulletImage.hyperbolic_yellow.value,
         ]
         self.x = GameSetting.width.value / 2 - self.ship_image.get_width() / 2
-        self.y = GameSetting.height.value * 0.9 - self.ship_image.get_height() / 3
+        self.y = GameSetting.height.value * 0.9 - self.ship_image.get_height()
+        self.cool_down_limit /= 3
+        self.velocity *= 1.5
 
     def collide(self, objects: list) -> None:
         super().collide(objects)
 
-    def attack(self) -> None:
+    def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
-            return
-        shoot(
+            return bullet_list
+
+        bullet_list = shoot(
             self.x + self.ship_image.get_width() / 4,
-            self.y - self.ship_image.get_height() * 1,
+            self.y - self.ship_image.get_height() / 2,
             random.choice(self.weapon_image),
             "comrade",
             "hyperbolic",
+            bullet_list,
         )
-        shoot(
-            self.x + self.ship_image.get_width() * 3 / 4,
-            self.y - self.ship_image.get_height() * 1,
+        bullet_list = shoot(
+            self.x - self.ship_image.get_width() / 4,
+            self.y - self.ship_image.get_height() / 2,
             random.choice(self.weapon_image),
             "comrade",
-            "circular",
+            "hyperbolic",
+            bullet_list,
         )
         self.last_shoot_time = time.time()
+        return bullet_list
 
     def health_bar(self, window: Surface) -> None:
+        pass
+
+    @override
+    def move(self, x: move_type, y: move_type) -> None:  # type: ignore (override)
+        if x == 0 and y == 0:
+            return  # No movement
+
+        # Calculate magnitude of movement vector
+        magnitude = np.sqrt(x**2 + y**2)
+
+        # Normalize the movement vector (important for diagonal movement)
+        if magnitude > 0:  # Avoid division by zero
+            x /= magnitude
+            y /= magnitude
+
+        # Apply velocity
+        self.x += x * self.velocity
+        self.y += y * self.velocity
+
+    def draw(self, window: Surface) -> None:
+        window.blit(self.ship_image, (self.x, self.y))
         pygame.draw.rect(
             window,
             Color.red.value,
@@ -103,54 +130,6 @@ class Player(ComradeShip):
                 6,
             ),
         )
-
-    @override
-    def move(self, x: move_type, y: move_type) -> None:  # type: ignore (override)
-        if x != 0 and y != 0:
-            speed = np.sqrt(self.velocity)
-        else:
-            speed = self.velocity
-
-        match x:
-            case 0:
-                match 0:
-                    case 0:
-                        pass
-                    case 1:
-                        self.y += speed
-                    case -1:
-                        self.y -= speed
-                    case _:
-                        raise ValueError(f"Unrecognized y move type {y}.")
-            case 1:
-                match 0:
-                    case 0:
-                        self.x += speed
-                    case 1:
-                        self.x += speed
-                        self.y += speed
-                    case -1:
-                        self.y -= speed
-                        self.x += speed
-                    case _:
-                        raise ValueError(f"Unrecognized y move type {y}.")
-            case -1:
-                match 0:
-                    case 0:
-                        self.x -= speed
-                    case 1:
-                        self.x -= speed
-                        self.y += speed
-                    case -1:
-                        self.y -= speed
-                        self.x -= speed
-                    case _:
-                        raise ValueError(f"Unrecognized y move type {y}.")
-            case _:
-                raise ValueError(f"Unrecognized x move type {x}.")
-
-    def draw(self, window: Surface) -> None:
-        window.blit(self.ship_image, (self.x, self.y))
 
     def hiatus(self):
         if self.current_health + self.restored_health > self.health:
