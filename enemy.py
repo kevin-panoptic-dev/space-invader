@@ -3,7 +3,7 @@ from constants import ShipImage, Color, BulletImage, GameSetting
 from abstract import EnemyShip
 from pygame.surface import Surface
 from typing import Optional
-from utility import shoot
+from utility import shoot, disappear
 from game import is_available
 
 
@@ -40,9 +40,12 @@ class GeneticEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
+        if disappear(self.y, self.group):
+            return bullet_list
+
         bullet_list = shoot(
-            self.x + self.ship_image.get_width() / 2,
-            self.y + self.ship_image.get_height() * 1.2,
+            self.x - self.ship_image.get_width() / 3,
+            self.y + self.ship_image.get_height() * 0.5,
             random.choice(self.weapon_image),
             "enemy",
             "hyperbolic",
@@ -56,9 +59,9 @@ class GiantEnemy(EnemyShip):
     def __init__(self) -> None:
         super().__init__()
         self.ship_image = ShipImage.giant.value
-        self.health = 2.5
+        self.health = 200.0
         self.multiplier = 1
-        self.current_health = 2.5
+        self.current_health = 200.0
         self.weapon_image = [
             BulletImage.hyperbolic_blue.value,
             BulletImage.hyperbolic_green.value,
@@ -107,6 +110,9 @@ class GiantEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
+        if disappear(self.y, self.group):
+            return bullet_list
+
         bullet_list = shoot(
             self.x + self.ship_image.get_width() / 2,
             self.y + self.ship_image.get_height() * 1.2,
@@ -124,9 +130,9 @@ class UfoEnemy(EnemyShip):
         super().__init__()
         self._direction: Optional[str] = None
         self.ship_image = ShipImage.ufo.value
-        self.health = 2.0
+        self.health = 20.0
         self.multiplier = 5
-        self.current_health = 2.0
+        self.current_health = 20.0
         self.weapon_image = [BulletImage.circular_red.value]
         self.velocity = 1.5
         self.cool_down_limit = 2.0
@@ -188,6 +194,10 @@ class UfoEnemy(EnemyShip):
     def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
+
+        if disappear(self.y, self.group):
+            return bullet_list
+
         bullet_list = shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1,
@@ -228,9 +238,9 @@ class LeaderEnemy(EnemyShip):
     def __init__(self) -> None:
         super().__init__()
         self.ship_image = ShipImage.ufo.value
-        self.health = 10.0
+        self.health = 500.0
         self.multiplier = 0.3
-        self.current_health = 10.0
+        self.current_health = 500.0
         self.weapon_image = [BulletImage.elite.value]
         self.cool_down_limit = 20
         self.velocity = 0.3
@@ -273,6 +283,10 @@ class LeaderEnemy(EnemyShip):
     def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
+
+        if disappear(self.y, self.group):
+            return bullet_list
+
         bullet_list = shoot(
             self.x,
             self.y + self.ship_image.get_height() * 1.2,

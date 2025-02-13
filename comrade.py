@@ -1,7 +1,7 @@
 import random, time
 from pygame.surface import Surface
 from abstract import ComradeShip
-from utility import shoot
+from utility import shoot, disappear
 from constants import ShipImage, BulletImage
 from game import is_available
 
@@ -24,6 +24,9 @@ class RocketComrade(ComradeShip):
 
     def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
+            return bullet_list
+
+        if disappear(self.y, self.group):
             return bullet_list
 
         bullet_list = shoot(

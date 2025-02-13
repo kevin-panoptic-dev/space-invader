@@ -5,7 +5,7 @@ from constants import ShipImage, BulletImage, GameSetting, Color
 from abstract import ComradeShip
 from utility import collect_data, shoot
 from typing import override, Literal
-from game import is_available
+from game import is_available, is_intersecting
 
 move_type = Literal[0, 1, -1]
 
@@ -62,8 +62,17 @@ class Player(ComradeShip):
         self.cool_down_limit /= 3
         self.velocity *= 1.5
 
-    def collide(self, objects: list) -> None:
-        super().collide(objects)
+    def collide(self, objects: list) -> bool:  # type: ignore (override)
+        collided_objects = is_intersecting(self, objects)
+        if not len(collided_objects):
+            return False
+
+        total_damage = np.sum([bullet.power for bullet in collided_objects])
+        self.current_health -= total_damage
+        if self.current_health < 0:
+            self.current_health = self.health * 2 / 3
+            return True
+        return False
 
     def attack(self, bullet_list: list):
         if not is_available(self.last_shoot_time, self.cool_down_limit):

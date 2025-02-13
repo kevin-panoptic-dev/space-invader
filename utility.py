@@ -82,6 +82,16 @@ def collect_data():
         return collect_data()
 
 
+def disappear(y, group):
+    if group == "comrade":
+        if y > 800:
+            return False
+    else:
+        if y < 0:
+            return False
+    return True
+
+
 def shoot(
     x: float,
     y: float,
