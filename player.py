@@ -75,6 +75,7 @@ class Player(ComradeShip):
         else:
             total_damage = np.sum([bullet.power for bullet in collided_objects])
         self.current_health -= total_damage
+
         if self.current_health < 0:
             self.current_health = self.health * 2 / 3
             return True
