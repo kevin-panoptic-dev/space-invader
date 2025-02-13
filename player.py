@@ -67,10 +67,11 @@ class Player(ComradeShip):
         if not len(collided_objects):
             return False
 
+        for obj in collided_objects:
+            obj.alive = False
+
         if isinstance(collided_objects[0], Ship):
             total_damage = np.random.random() * 20
-            for ship in collided_objects:
-                ship.alive = False
         else:
             total_damage = np.sum([bullet.power for bullet in collided_objects])
         self.current_health -= total_damage

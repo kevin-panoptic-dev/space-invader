@@ -42,6 +42,9 @@ class Ship(ABC):
         if not len(collided_objects):
             return
 
+        for obj in collided_objects:
+            obj.alive = False
+
         total_damage = np.sum([bullet.power for bullet in collided_objects])
         self.current_health -= total_damage
         if self.current_health < 0:

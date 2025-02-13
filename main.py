@@ -177,14 +177,14 @@ def draw(life: int, player: Player):
     for bullet in GLOBAL_COMRADE_BULLET_LIST:
         bullet.draw(window)
         bullet.move()
-        bullet.collide(GLOBAL_ENEMY_SHIP_LIST)
+        # bullet.collide(GLOBAL_ENEMY_SHIP_LIST)
         if negative_unbound(bullet.y, bullet.image.get_height()):
             bullet.alive = False
 
     for bullet in GLOBAL_ENEMY_BULLET_LIST:
         bullet.draw(window)
         bullet.move()
-        bullet.collide([*GLOBAL_COMRADE_SHIP_LIST, player])
+        # bullet.collide([*GLOBAL_COMRADE_SHIP_LIST, player])
         if positive_unbound(bullet.y, bullet.image.get_height()):
             bullet.alive = False
 
