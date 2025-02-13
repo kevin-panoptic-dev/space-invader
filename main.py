@@ -252,6 +252,9 @@ def draw(life: int, player: Player):
     player.draw(window)
     if player.collide(GLOBAL_ENEMY_BULLET_LIST):
         life -= 1
+
+    if player.collide(GLOBAL_ENEMY_SHIP_LIST):
+        life -= 1
     # draw_mask(window, player.mask, (int(player.x), int(player.y)))
     pygame.display.update()
     return life

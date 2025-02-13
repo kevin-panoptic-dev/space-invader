@@ -2,7 +2,7 @@ import pickle, random, numpy as np, time, pygame
 from pygame.surface import Surface
 from typing import Optional
 from constants import ShipImage, BulletImage, GameSetting, Color
-from abstract import ComradeShip
+from abstract import ComradeShip, Ship
 from utility import collect_data, shoot
 from typing import override, Literal
 from game import is_available, is_intersecting
@@ -67,7 +67,12 @@ class Player(ComradeShip):
         if not len(collided_objects):
             return False
 
-        total_damage = np.sum([bullet.power for bullet in collided_objects])
+        if isinstance(collided_objects[0], Ship):
+            total_damage = np.random.random() * 20
+            for ship in collided_objects:
+                ship.alive = False
+        else:
+            total_damage = np.sum([bullet.power for bullet in collided_objects])
         self.current_health -= total_damage
         if self.current_health < 0:
             self.current_health = self.health * 2 / 3

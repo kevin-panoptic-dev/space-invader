@@ -40,7 +40,7 @@ class GeneticEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
-        if disappear(self.y, self.group):
+        if not disappear(self.y, self.group):
             return bullet_list
 
         bullet_list = shoot(
@@ -110,8 +110,8 @@ class GiantEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
-        if disappear(self.y, self.group):
-            return bullet_list
+        # if disappear(self.y, self.group):
+        #     return bullet_list
 
         bullet_list = shoot(
             self.x + self.ship_image.get_width() / 2,
@@ -195,7 +195,7 @@ class UfoEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
-        if disappear(self.y, self.group):
+        if not disappear(self.y, self.group):
             return bullet_list
 
         bullet_list = shoot(
@@ -284,7 +284,7 @@ class LeaderEnemy(EnemyShip):
         if not is_available(self.last_shoot_time, self.cool_down_limit):
             return bullet_list
 
-        if disappear(self.y, self.group):
+        if not disappear(self.y, self.group):
             return bullet_list
 
         bullet_list = shoot(
