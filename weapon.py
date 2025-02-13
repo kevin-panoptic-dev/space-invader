@@ -29,7 +29,7 @@ class Bullet(ABC):
 
         if len(collided_objects):
             self.alive = False
-            print("kill a bullet")
+            # print("kill a bullet")
 
     @property
     def y_velocity(self):
@@ -219,7 +219,7 @@ class EnemyCircularBullet(EnemyBullet):
     def __init__(self) -> None:
         super().__init__()
         self.image = BulletImage.circular_red.value
-        self.power = 7.5
+        self.power = 5
         self.x_velocity = 2 if np.random.random() > 0.5 else -2
         self.y_velocity = 2
 
@@ -238,7 +238,7 @@ class EnemyEliteBullet(EnemyBullet):
     def __init__(self) -> None:
         super().__init__()
         self.image = BulletImage.elite.value
-        self.power = 1
+        self.power = 10
         self.x_velocity = 0
         self.y_velocity = 1.2
 

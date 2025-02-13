@@ -35,9 +35,9 @@ class Ship(ABC):
 
     @abstractmethod
     def collide(self, objects: list) -> None:
-        objects = list(
-            filter(lambda bullet: bullet.group != self.group and bullet.alive, objects)
-        )
+        # objects = list(
+        #     filter(lambda bullet: bullet.group != self.group and bullet.alive, objects)
+        # )
         collided_objects = is_intersecting(self, objects)
         if not len(collided_objects):
             return

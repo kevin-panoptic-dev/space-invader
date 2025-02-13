@@ -20,7 +20,7 @@ class GeneticEnemy(EnemyShip):
         self.health = 1.0
         self.multiplier = 10
         self.velocity = 1.0
-        self.cool_down_limit = 2
+        self.cool_down_limit = 4
         self.current_health = 1.0
 
     def draw(self, window: Surface) -> None:
@@ -66,7 +66,7 @@ class GiantEnemy(EnemyShip):
             BulletImage.hyperbolic_yellow.value,
         ]
         self.velocity = 0.8
-        self.cool_down_limit = 3
+        self.cool_down_limit = 6
 
     def move(self) -> None:
         return super().move()
@@ -129,7 +129,7 @@ class UfoEnemy(EnemyShip):
         self.current_health = 2.0
         self.weapon_image = [BulletImage.circular_red.value]
         self.velocity = 1.5
-        self.cool_down_limit = 1.5
+        self.cool_down_limit = 2.0
 
     def move(self):
         if self.direction == None:
@@ -232,7 +232,7 @@ class LeaderEnemy(EnemyShip):
         self.multiplier = 0.3
         self.current_health = 10.0
         self.weapon_image = [BulletImage.elite.value]
-        self.cool_down_limit = 10
+        self.cool_down_limit = 20
         self.velocity = 0.3
 
     def draw(self, window: Surface) -> None:

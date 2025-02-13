@@ -19,6 +19,7 @@ from player import Player
 from constants import GameSetting, UtilityImage
 from pymodule.utility import silence
 from utility import parse, init
+from pymodule.debug import vibrenthe
 
 
 window = GameSetting.window.value
@@ -164,6 +165,20 @@ def draw(life: int, player: Player):
     heart = UtilityImage.heart.value
     window.blit(UtilityImage.background.value, (0, 0))
 
+    for bullet in GLOBAL_COMRADE_BULLET_LIST:
+        bullet.draw(window)
+        bullet.move()
+        bullet.collide(GLOBAL_ENEMY_SHIP_LIST)
+        if negative_unbound(bullet.y):
+            bullet.alive = False
+
+    for bullet in GLOBAL_ENEMY_BULLET_LIST:
+        bullet.draw(window)
+        bullet.move()
+        bullet.collide([*GLOBAL_COMRADE_SHIP_LIST, player])
+        if positive_unbound(bullet.y, bullet.image.get_height()):
+            bullet.alive = False
+
     for ship in GLOBAL_COMRADE_SHIP_LIST:
         ship.draw(window)
         ship.move()
@@ -189,7 +204,9 @@ def draw(life: int, player: Player):
     for ship in GLOBAL_ENEMY_SHIP_LIST:
         ship.draw(window)
         ship.move()
-        GLOBAL_ENEMY_BULLET_LIST = ship.collide(GLOBAL_ENEMY_BULLET_LIST)
+        GLOBAL_ENEMY_BULLET_LIST = ship.attack(GLOBAL_ENEMY_BULLET_LIST)
+        # with vibrenthe():
+        ship.collide(GLOBAL_COMRADE_BULLET_LIST)
         if positive_unbound(ship.y, ship.ship_image.get_height()):
             ship.alive = False
             life -= 1
@@ -200,20 +217,6 @@ def draw(life: int, player: Player):
             if is_overlap:
                 ship.alive = False
                 player.current_health -= np.random.randint(10, 50)
-
-    for bullet in GLOBAL_ENEMY_BULLET_LIST:
-        bullet.draw(window)
-        bullet.move()
-        bullet.collide([*GLOBAL_COMRADE_SHIP_LIST, player])
-        if positive_unbound(bullet.y, bullet.image.get_height()):
-            bullet.alive = False
-
-    for bullet in GLOBAL_COMRADE_BULLET_LIST:
-        bullet.draw(window)
-        bullet.move()
-        bullet.collide(GLOBAL_ENEMY_SHIP_LIST)
-        if negative_unbound(bullet.y):
-            bullet.alive = False
 
     # for bullet in GLOBAL_BULLET_LIST:
     #     assert (
@@ -364,7 +367,7 @@ def main(user: str):
             # println = lambda *x: np.random.random() > 0.95 and print(*x)
 
             # println(len(GLOBAL_BULLET_LIST))
-            pygame.display.update()
+            # pygame.display.update()
 
             if life <= 0 or player.current_health <= 0 or not player.alive:
                 print("exit")

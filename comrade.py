@@ -19,7 +19,7 @@ class RocketComrade(ComradeShip):
         self.health = 1.0
         self.multiplier = 1
         self.velocity = 0.5
-        self.cool_down_limit = 1.8
+        self.cool_down_limit = 5
         self.current_health = 1.0
 
     def attack(self, bullet_list: list):
