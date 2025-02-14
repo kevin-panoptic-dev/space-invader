@@ -108,6 +108,8 @@ def populate(wave: int):
     comrade_positions = []
 
     for ship in GLOBAL_COMRADE_SHIP_LIST:
+        if hasattr(ship, "_x"):
+            continue
         while True:
             y = int(
                 np.random.randint(
@@ -115,8 +117,8 @@ def populate(wave: int):
                     required_lower_height + GameSetting.height.value,
                 )
             )
-            x = int(np.random.randint(0, GameSetting.width.value))
-            if is_overlap(comrade_positions, 50, x, y):
+            x = int(np.random.randint(20, GameSetting.width.value - 120))
+            if is_overlap(comrade_positions, 80, x, y):
                 continue
             ship.x = x
             ship.y = y
@@ -127,7 +129,7 @@ def populate(wave: int):
         while True:
             y = int(np.random.randint(-required_upper_height, 0))
             x = int(np.random.randint(20, GameSetting.width.value - 120))
-            if is_overlap(enemy_positions, 50, x, y):
+            if is_overlap(enemy_positions, 80, x, y):
                 continue
             ship.x = x
             ship.y = y
@@ -191,9 +193,13 @@ def draw(life: int, player: Player):
     for ship in GLOBAL_COMRADE_SHIP_LIST:
         ship.draw(window)
         ship.move()
-        if not len(GLOBAL_COMRADE_SHIP_LIST) > 100:
+        if len(GLOBAL_COMRADE_SHIP_LIST) < 100:
             GLOBAL_COMRADE_BULLET_LIST = ship.attack(GLOBAL_COMRADE_BULLET_LIST)
         ship.collide(GLOBAL_ENEMY_BULLET_LIST)
+
+        if negative_unbound(ship.y, ship.ship_image.get_height()):
+            ship.alive = False
+            life += 1 if life <= 7 else 0
         # ship.health_bar(window)
         # if is_comrade(ship):
         # if negative_unbound(ship.y):
@@ -214,20 +220,20 @@ def draw(life: int, player: Player):
     for ship in GLOBAL_ENEMY_SHIP_LIST:
         ship.draw(window)
         ship.move()
-        if len(GLOBAL_ENEMY_BULLET_LIST) < 30:
+        if len(GLOBAL_ENEMY_BULLET_LIST) < 60:
             GLOBAL_ENEMY_BULLET_LIST = ship.attack(GLOBAL_ENEMY_BULLET_LIST)
         # with vibrenthe():
         ship.collide(GLOBAL_COMRADE_BULLET_LIST)
         if positive_unbound(ship.y, ship.ship_image.get_height()):
             ship.alive = False
             life -= 1
-        else:
-            offset_x = player.x - ship.x
-            offset_y = player.y - ship.y
-            is_overlap = player.mask.overlap(ship.mask, (offset_x, offset_y))
-            if is_overlap:
-                ship.alive = False
-                player.current_health -= np.random.randint(10, 50)
+        # else:
+        #     offset_x = player.x - ship.x
+        #     offset_y = player.y - ship.y
+        #     is_overlap = player.mask.overlap(ship.mask, (offset_x, offset_y))
+        #     if is_overlap:
+        #         ship.alive = False
+        #         player.current_health -= np.random.randint(10, 50)
 
     # for bullet in GLOBAL_BULLET_LIST:
     #     assert (
@@ -269,7 +275,7 @@ def main(user: str):
     for wave in range(MAX_ITERATION):
         populate(wave + 1)
         while True:
-            clock.tick(60)
+            clock.tick(GameSetting.fps.value)
             life = draw(life, player)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -281,7 +287,9 @@ def main(user: str):
 
             keys = pygame.key.get_pressed()
 
-            if keys[pygame.K_SPACE] and len(GLOBAL_COMRADE_BULLET_LIST) < 15:
+            if keys[pygame.K_SPACE] and len(GLOBAL_COMRADE_BULLET_LIST) < 15 * (
+                len(GLOBAL_COMRADE_SHIP_LIST) + 1
+            ):
                 GLOBAL_COMRADE_BULLET_LIST = player.attack(GLOBAL_COMRADE_BULLET_LIST)
 
             move_x = 0  # Initialize move_x
@@ -364,10 +372,10 @@ def main(user: str):
             #             bullet.alive = False
 
             GLOBAL_COMRADE_BULLET_LIST = list(
-                filter(lambda bullet: bullet.alive, GLOBAL_COMRADE_BULLET_LIST)
+                filter(lambda bullet: bullet.alive, GLOBAL_COMRADE_BULLET_LIST)  # type: ignore
             )
             GLOBAL_ENEMY_BULLET_LIST = list(
-                filter(lambda bullet: bullet.alive, GLOBAL_ENEMY_BULLET_LIST)
+                filter(lambda bullet: bullet.alive, GLOBAL_ENEMY_BULLET_LIST)  # type: ignore
             )
             GLOBAL_ENEMY_SHIP_LIST = list(
                 filter(lambda ship: ship.alive, GLOBAL_ENEMY_SHIP_LIST)
@@ -377,8 +385,7 @@ def main(user: str):
             )
 
             if not len(GLOBAL_ENEMY_SHIP_LIST):
-                for _ in range(int(np.ceil((wave + 1) / 5))):
-                    player.hiatus()
+                player.hiatus()
                 break
 
             # println = lambda *x: np.random.random() > 0.95 and print(*x)

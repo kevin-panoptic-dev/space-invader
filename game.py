@@ -16,6 +16,7 @@ def is_intersecting(host, opposites):
 def is_available(last_time: float, limit: float):
     current_time = time.time()
     time_since_last_shot = current_time - last_time
+    #  print(time_since_last_shot > limit)
     if time_since_last_shot > limit:
         return True
     return False

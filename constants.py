@@ -12,7 +12,7 @@ class GameSetting(Enum):
     window = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("comicsans", 50)
-    fps = 8
+    fps = 45
 
 
 class ShipImage(Enum):

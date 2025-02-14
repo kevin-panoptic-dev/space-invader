@@ -1,4 +1,4 @@
-import pygame, argparse, sys
+import pygame, argparse, sys, random
 from pymodule.debug import vibrenthe
 from pymodule.utility import silence
 from pygame.surface import Surface
@@ -126,6 +126,7 @@ def shoot(
     bullet.x = x
     bullet.y = y
     bullet_list.append(bullet)
+    # vibrenthe(len(bullet_list))
     return bullet_list
 
 

@@ -3,9 +3,11 @@ from pygame.surface import Surface
 from typing import Optional
 from constants import ShipImage, BulletImage, GameSetting, Color
 from abstract import ComradeShip, Ship
+from enemy import GiantEnemy, LeaderEnemy
 from utility import collect_data, shoot
 from typing import override, Literal
 from game import is_available, is_intersecting
+from pymodule.debug import vibrenthe
 
 move_type = Literal[0, 1, -1]
 
@@ -20,25 +22,26 @@ class Player(ComradeShip):
 
         try:
             with open("data.pickle", "rb") as file:
-                all_data: dict[str, dict[str, float]] = pickle.load(file)
-                if user in all_data.keys():
-                    dataset = all_data.get(user)
-                    if dataset is not None:
+                all_data: list[dict[str, dict[str, float]]] = pickle.load(file)
+                for dictionary in all_data:
+                    if user in dictionary.keys():
+                        dataset = dictionary[user]
                         self.health = dataset["health"]
                         self.current_health = self.health
                         self.velocity = dataset["velocity"]
                         self.cool_down_limit = dataset["cool_down_limit"]
                         self.restored_health = dataset["restored_health"]
-                    else:
-                        new_dataset = collect_data()
-                        self.health = new_dataset["health"]
-                        self.current_health = self.health
-                        self.velocity = new_dataset["velocity"]
-                        self.cool_down_limit = new_dataset["cool_down_limit"]
-                        self.restored_health = new_dataset["restored_health"]
-                        all_data[user] = new_dataset
-                        with open("data.pickle", "wb") as file:
-                            pickle.dump({user: all_data}, file)
+                        break
+                else:
+                    new_dataset = collect_data()
+                    self.health = new_dataset["health"]
+                    self.current_health = self.health
+                    self.velocity = new_dataset["velocity"]
+                    self.cool_down_limit = new_dataset["cool_down_limit"]
+                    self.restored_health = new_dataset["restored_health"]
+                    all_data.append({user: new_dataset})
+                    with open("data.pickle", "wb") as file:
+                        pickle.dump(all_data, file)
 
         except FileNotFoundError:
             dataset = collect_data()
@@ -48,7 +51,7 @@ class Player(ComradeShip):
             self.cool_down_limit = dataset["cool_down_limit"]
             self.restored_health = dataset["restored_health"]
             with open("data.pickle", "wb") as file:
-                pickle.dump({user: dataset}, file)
+                pickle.dump([{user: dataset}], file)
 
         self.ship_image = ShipImage.player.value
         self.weapon_image = [
@@ -70,8 +73,12 @@ class Player(ComradeShip):
         for obj in collided_objects:
             obj.alive = False
 
-        if isinstance(collided_objects[0], Ship):
-            total_damage = np.random.random() * 20
+        if isinstance(_ := collided_objects[0], Ship):
+            total_damage = max(np.random.random() * 50, 25) * len(collided_objects)
+            if isinstance(_, GiantEnemy):
+                total_damage += max(np.random.random() * 30, 15)
+            elif isinstance(_, LeaderEnemy):
+                total_damage *= 3
         else:
             total_damage = np.sum([bullet.power for bullet in collided_objects])
         self.current_health -= total_damage
