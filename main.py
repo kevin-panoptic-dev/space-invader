@@ -20,6 +20,7 @@ from constants import GameSetting, UtilityImage
 from pymodule.utility import silence
 from utility import parse, init
 from pymodule.debug import vibrenthe
+from interphase import menu
 
 
 window = GameSetting.window.value
@@ -271,6 +272,7 @@ def main(user: str):
     life = 5
     player = Player(user=user)
     clock = GameSetting.clock.value
+    menu(window, clock)
 
     for wave in range(MAX_ITERATION):
         populate(wave + 1)
