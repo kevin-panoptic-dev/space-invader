@@ -1,10 +1,9 @@
 import random, time
 from pygame.surface import Surface
 from abstract import ComradeShip
-from utility import shoot, disappear
+from utility import shoot
 from constants import ShipImage, BulletImage
 from game import is_available
-from pymodule.debug import vibrenthe
 from constants import GameSetting
 
 

@@ -1,5 +1,4 @@
-import pygame, numpy as np, random, time, copy, sys
-from pygame.surface import Surface
+import pygame, numpy as np, sys
 from core import (
     MAX_ITERATION,
     GLOBAL_COMRADE_BULLET_LIST,
@@ -9,18 +8,10 @@ from core import (
 )
 from comrade import RocketComrade
 from enemy import UfoEnemy, GeneticEnemy, GiantEnemy, LeaderEnemy
-from weapon import (
-    EnemyHyperbolicBullet,
-    ComradeHyperbolicBullet,
-    EnemyCircularBullet,
-    EnemyEliteBullet,
-)
 from player import Player
 from constants import GameSetting, UtilityImage
-from pymodule.utility import silence
 from utility import parse, init
-from pymodule.debug import vibrenthe
-from interphase import menu
+from interphase import menu, next, finish
 
 
 window = GameSetting.window.value
@@ -388,6 +379,7 @@ def main(user: str):
 
             if not len(GLOBAL_ENEMY_SHIP_LIST):
                 player.hiatus()
+                next(window, clock)
                 break
 
             # println = lambda *x: np.random.random() > 0.95 and print(*x)
@@ -397,6 +389,9 @@ def main(user: str):
 
             if life <= 0 or player.current_health <= 0 or not player.alive:
                 # print("exit")
+                if finish(window, clock):
+                    main(user)
+
                 pygame.quit()
                 sys.exit()
 
