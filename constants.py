@@ -3,6 +3,11 @@ from enum import Enum
 from os import path
 
 pygame.font.init()
+pygame.mixer.init()
+
+
+class Music(Enum):
+    shoot = pygame.mixer.Sound(path.join("static", "music", "shoot.mp3"))
 
 
 class GameSetting(Enum):

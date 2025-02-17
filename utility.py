@@ -1,4 +1,5 @@
 import pygame, argparse, sys, random
+from os import path
 from pymodule.debug import vibrenthe
 from pymodule.utility import silence
 from pygame.surface import Surface
@@ -18,6 +19,10 @@ weaponType = Literal["elite", "circular", "hyperbolic"]
 def init():
     pygame.font.init()
     pygame.display.set_caption("Space Invader")
+    pygame.mixer.init()
+    pygame.mixer.music.load(path.join("static", "music", "background.mp3"))
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(-1)
 
 
 def collect_data():

@@ -9,7 +9,7 @@ from core import (
 from comrade import RocketComrade
 from enemy import UfoEnemy, GeneticEnemy, GiantEnemy, LeaderEnemy
 from player import Player
-from constants import GameSetting, UtilityImage
+from constants import GameSetting, UtilityImage, Music
 from utility import parse, init
 from interphase import menu, next, finish
 
@@ -20,6 +20,7 @@ genetic_multiplier = GeneticEnemy().multiplier
 giant_multiplier = GiantEnemy().multiplier
 leader_multiplier = LeaderEnemy().multiplier
 comrade_multiplier = RocketComrade().multiplier
+sound_channel = pygame.mixer.Channel(0)
 
 
 # def draw_mask(
@@ -275,6 +276,10 @@ def main(user: str):
                     pygame.quit()
                     sys.exit()
 
+                # if event.type == "SOUND_END_EVENT":
+                #     Music.shoot.value.stop()
+                #     pygame.time.set_timer(event.SOUND_END_EVENT, 0)
+
             move_x = 0
             move_y = 0
 
@@ -283,6 +288,8 @@ def main(user: str):
             if keys[pygame.K_SPACE] and len(GLOBAL_COMRADE_BULLET_LIST) < 15 * (
                 len(GLOBAL_COMRADE_SHIP_LIST) + 1
             ):
+                if not sound_channel.get_busy():
+                    Music.shoot.value.play(maxtime=200)
                 GLOBAL_COMRADE_BULLET_LIST = player.attack(GLOBAL_COMRADE_BULLET_LIST)
 
             move_x = 0  # Initialize move_x
