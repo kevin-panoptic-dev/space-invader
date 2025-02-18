@@ -263,6 +263,11 @@ def main(user: str):
     global GLOBAL_COMRADE_BULLET_LIST, GLOBAL_ENEMY_SHIP_LIST, GLOBAL_COMRADE_SHIP_LIST, GLOBAL_ENEMY_BULLET_LIST
     life = 5
     player = Player(user=user)
+    GLOBAL_COMRADE_BULLET_LIST = []
+    GLOBAL_ENEMY_BULLET_LIST = []
+    GLOBAL_COMRADE_SHIP_LIST = []
+    GLOBAL_ENEMY_SHIP_LIST = []
+
     clock = GameSetting.clock.value
     menu(window, clock)
 
