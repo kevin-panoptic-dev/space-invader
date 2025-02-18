@@ -1,7 +1,8 @@
 import pygame, argparse, sys, random
 from os import path
-from pymodule.debug import vibrenthe
-from pymodule.utility import silence
+
+# from pymodule.debug import vibrenthe
+# from pymodule.utility import silence
 from pygame.surface import Surface
 from typing import Literal
 from weapon import (
@@ -15,7 +16,7 @@ groupType = Literal["comrade", "enemy"]
 weaponType = Literal["elite", "circular", "hyperbolic"]
 
 
-@silence()
+# @silence()
 def init():
     pygame.font.init()
     pygame.display.set_caption("Space Invader")
@@ -27,11 +28,11 @@ def init():
 
 def collect_data():
     try:
-        vibrenthe(
+        print(
             "Enter preferred health, between 50 and 500: >>>",
-            usefile=False,
-            useline=False,
-            color=vibrenthe.GREEN,
+            # usefile=False,
+            # useline=False,
+            # color=vibrenthe.GREEN,
             end="",
         )
 
@@ -39,11 +40,11 @@ def collect_data():
         if not 50 <= health <= 500:
             raise ValueError("Health must between 50 and 500")
 
-        vibrenthe(
+        print(
             "Enter preferred velocity, between 1.0 and 5.0: >>>",
-            usefile=False,
-            useline=False,
-            color=vibrenthe.GREEN,
+            # usefile=False,
+            # useline=False,
+            # color=vibrenthe.GREEN,
             end="",
         )
         velocity = round(float(input()), 2)
@@ -51,11 +52,11 @@ def collect_data():
         if not 1.0 <= velocity <= 5.0:
             raise ValueError("Velocity must between 1.0 and 5.0")
 
-        vibrenthe(
+        print(
             "Enter preferred cool down interval, between 0.3 and 2.0: >>>",
-            usefile=False,
-            useline=False,
-            color=vibrenthe.GREEN,
+            # usefile=False,
+            # useline=False,
+            # color=vibrenthe.GREEN,
             end="",
         )
         cool_down_limit = round(float(input()), 2)
@@ -63,11 +64,11 @@ def collect_data():
         if not 0.3 <= cool_down_limit <= 2.0:
             raise ValueError("Cool down must between 0.3 and 2.0")
 
-        vibrenthe(
+        print(
             "Enter preferred restored_health, between 0 and 50: >>>",
-            usefile=False,
-            useline=False,
-            color=vibrenthe.GREEN,
+            # usefile=False,
+            # useline=False,
+            # color=vibrenthe.GREEN,
             end="",
         )
         restored_health = round(float(input()), 2)
@@ -83,7 +84,7 @@ def collect_data():
         }
 
     except Exception as error:
-        vibrenthe(f"INVALID INPUT: {error}!")
+        print(f"INVALID INPUT: {error}!")
         return collect_data()
 
 
@@ -143,7 +144,7 @@ def parse() -> str:
     try:
         parsed_arguments: argparse.Namespace = parser.parse_args()
     except SystemExit:
-        vibrenthe(
+        print(
             "User flag is required and must be provided with a valid string.",
             end="\n\n",
         )
